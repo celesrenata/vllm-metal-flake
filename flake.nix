@@ -38,6 +38,14 @@
             name = "vllm-build";
             runtimeInputs = [ pkgs.cmake ];
             text = ''
+              ${pkgs.lib.optionalString metal ''
+                # The pinned upstream all-target build includes a NUMA test
+                # that unconditionally includes Linux's malloc.h on macOS.
+                # Explicit caller arguments still select their own targets.
+                if [ "$#" -eq 0 ]; then
+                  set -- --target vllm vllm-cli vllm-server test_metal_backend test_platform
+                fi
+              ''}
               cmake --build "''${VLLM_CPP_BUILD_DIR:-build-${backend}}" \
                 --parallel "''${JOBS:-4}" "$@"
             '';

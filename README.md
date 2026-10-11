@@ -25,7 +25,11 @@ evaluation or compilation alone does not validate inference.
 
 The default source is the upstream revision pinned in `flake.lock`. Builds go
 into `build-metal` in the current directory, keeping the Nix store read-only.
-The CLI and server are built with upstream's defaults. `vllm-test` runs the
+On macOS, `vllm-build` defaults to the validated targets: `vllm`, `vllm-cli`,
+`vllm-server`, `test_metal_backend`, and `test_platform`. Explicit arguments
+override that default (for example, `vllm-build --target vllm`). The full upstream
+build includes `test_kolibri1_numa`, which fails on macOS because it includes
+`malloc.h`; it is not part of this default workflow. `vllm-test` runs the
 existing Metal backend and platform suites, and fails if no tests are found.
 Inspect test output for device-dependent skips before claiming GPU readiness.
 
@@ -78,7 +82,12 @@ nix develop path:. -c vllm-test
 
 Linux explicitly disables Metal and the other GPU backends, and uses `build-cpu`.
 It cannot validate the macOS compiler, Apple frameworks, or Metal GPU execution.
-Run the Apple commands above before treating this flake as Metal-tested.
+The user validated the targeted Apple build on an M5 Max with SDK 15.5:
+`test_platform` and `test_metal_backend` both passed (2/2 CTest entries, 2.96s).
+This is user-reported Mac validation; cloud checks only evaluate the flake.
+Model inference, MLX, and the complete upstream test suite are not validated.
+
+See [CODEX_HANDOFF.md](CODEX_HANDOFF.md) for the session continuation context.
 
 Update pins intentionally with `nix flake update --flake path:.`. No model download or credential
 is needed for the backend tests; inference requires a compatible local model.
