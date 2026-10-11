@@ -1,0 +1,40 @@
+{
+  "nodes": {
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1791487292,
+        "narHash": "sha256-tqM7xDEsaeK1p6VvRygeZ9LkQRpUUkbRT02BHv6hnTM=",
+        "type": "tarball",
+        "url": "https://codeload.github.com/NixOS/nixpkgs/tar.gz/8edc0c72e3a38faf5434e40d1f19431125fe4b30"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixpkgs": "nixpkgs",
+        "vllm-cpp": "vllm-cpp"
+      }
+    },
+    "vllm-cpp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791627270,
+        "narHash": "sha256-BXveRe1mtnPpW6b3jjZ/1Uz392TMVvLR/gt1KLGL+aw=",
+        "type": "tarball",
+        "url": "https://codeload.github.com/localai-org/vllm.cpp/tar.gz/6c43232260b300e6992f9375811f782fe24c172a"
+      },
+      "original": {
+        "owner": "localai-org",
+        "repo": "vllm.cpp",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
