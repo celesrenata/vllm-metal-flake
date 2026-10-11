@@ -17,7 +17,8 @@ vllm-test
 ```
 
 The shell supplies CMake, Ninja, Python, OpenSSL, and the Darwin C++ toolchain
-with its Nix-packaged Apple SDK. Metal and Foundation come from that SDK.
+with its Nix-packaged Apple SDK 15 and a macOS 15 minimum deployment target.
+Metal and Foundation come from that SDK. The native backend requires macOS 15+.
 Upstream compiles its embedded Metal shaders at runtime, so an offline Xcode
 `metal` compiler is not required. GPU execution requires an actual Metal device;
 evaluation or compilation alone does not validate inference.
@@ -27,6 +28,20 @@ into `build-metal` in the current directory, keeping the Nix store read-only.
 The CLI and server are built with upstream's defaults. `vllm-test` runs the
 existing Metal backend and platform suites, and fails if no tests are found.
 Inspect test output for device-dependent skips before claiming GPU readiness.
+
+The Darwin configure helper keeps upstream's unused-variable warnings visible
+without treating them as errors: the pinned source declares empty NUMA guards
+on macOS. Other warnings retain upstream's error policy.
+
+After changing the SDK, use a new build directory to avoid cached compiler and
+SDK paths from the previous shell:
+
+```sh
+export VLLM_CPP_BUILD_DIR="$PWD/build-metal-sdk15"
+vllm-configure
+vllm-build
+vllm-test
+```
 
 For a quicker backend validation build:
 

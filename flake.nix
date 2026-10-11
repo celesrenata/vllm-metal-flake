@@ -27,6 +27,7 @@
               build_dir="''${VLLM_CPP_BUILD_DIR:-build-${backend}}"
               cmake -S "$source_dir" -B "$build_dir" -G Ninja \
                 -DCMAKE_BUILD_TYPE=Release \
+                ${nixpkgs.lib.optionalString metal "-DCMAKE_CXX_FLAGS=-Wno-error=unused-variable"} \
                 -DVLLM_CPP_METAL=${if metal then "ON" else "OFF"} \
                 -DVLLM_CPP_CUDA=OFF -DVLLM_CPP_HIP=OFF \
                 -DVLLM_CPP_VULKAN=OFF -DVLLM_CPP_TRITON=OFF \
@@ -55,9 +56,11 @@
               bashInteractive cmake ninja git pkg-config python312
               configure build test
             ];
-            buildInputs = [ pkgs.openssl ];
-            # Darwin stdenv supplies clang and the Nix-packaged Apple SDK,
-            # including Metal and Foundation; no host SDK path is hard-coded.
+            buildInputs = [ pkgs.openssl ] ++ pkgs.lib.optionals metal [
+              # MTLCompileOptions.mathMode first appears in macOS 15's SDK.
+              pkgs.apple-sdk_15
+              (pkgs.darwinMinVersionHook "15.0")
+            ];
             shellHook = ''
               export OBJCXX="$CXX"
               echo "vllm.cpp ${backend} shell: vllm-configure; vllm-build; vllm-test"
